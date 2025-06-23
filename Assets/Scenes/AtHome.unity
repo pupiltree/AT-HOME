@@ -2932,7 +2932,7 @@ MonoBehaviour:
     m_Left: 0
     m_Right: 0
     m_Top: 12
-    m_Bottom: 0
+    m_Bottom: 12
   m_ChildAlignment: 1
   m_Spacing: 15
   m_ChildForceExpandWidth: 1
