@@ -1,41 +1,39 @@
+using Mediapipe.Unity;
+using Mediapipe.Unity.CoordinateSystem;
+using Mediapipe.Unity.Sample.FaceDetection;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
-public class MediaPipeNoseBridge : MonoBehaviour
+public class MediaPipeNoseBridge : HierarchicalAnnotation
 {
-    public BasketController basketController;     // Reference to your gameplay controller
-    public static int screenWidth;
-    public static int screenHeight;
-    public string activeGameName = "";
+    public BasketController basketController;
+    public FaceDetectionRunner detectionRunner;
+    public RectTransform objects;
 
-    private float smoothedX = 0f;
-    private float faceSmoothingSpeed = 5f;        // Smoothing speed for face movement
-
-    void Start()
+    void Update()
     {
-        screenWidth = Screen.height;
-        screenHeight = Screen.width;
+        if (detectionRunner.currentResult.detections != null && detectionRunner.currentResult.detections.Count > 0)
+            Move(detectionRunner.currentResult.detections[0].keypoints[2]);
     }
-
-    /// <summary>
-    /// Called from FaceLandmarkerRunner with face center X and dummy Y (ignored)
-    /// </summary>
-    public void OnReceiveFaceData(string faceCenterPos)
+    public UnityEngine.Rect GetScreenRect()
     {
-        string[] parts = faceCenterPos.Split(',');
-
-        if (parts.Length != 2)
-            return;
-
-        if (float.TryParse(parts[0], out float x))
+        return GetAnnotationLayer().rect;
+    }
+    public void Move(Mediapipe.Tasks.Components.Containers.NormalizedKeypoint target)
+    {
+        if (ActivateFor(target))
         {
-            // Normalize X from screen pixels to 0-1
-            float normalizedX = Mathf.Clamp01(x / (float)screenWidth);
-
-            // Apply smoothing
-            smoothedX = Mathf.Lerp(smoothedX, normalizedX, Time.deltaTime * faceSmoothingSpeed);
-
-            // Send to controller (you decide how to use smoothedX in world space)
-            basketController.UpdateBasketPosition(smoothedX);
+            Vector2 vector = GetScreenRect().GetPoint(target, rotationAngle, isMirrored);
+#if UNITY_EDITOR
+            basketController.UpdateBasketPosition(target.x);
+#elif UNITY_ANDROID
+            basketController.UpdateBasketPosition(target.y);
+#endif
         }
     }
+    public RectTransform GetAnnotationLayer()
+    {
+        return objects.GetComponent<RectTransform>();
+    }
+
 }
