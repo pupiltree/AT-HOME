@@ -1862,7 +1862,7 @@ MonoBehaviour:
   - gameId: adverb_identifier_01
     title: Space Quiz
     thumbnail: {fileID: 1455171713, guid: 3e441ff62ef6ce747a754d2ac1a3179b, type: 3}
-    prefab: {fileID: 8175946928944182040, guid: af164090788376648935af4f077df6ef, type: 3}
+    prefab: {fileID: 7161647642167998722, guid: af164090788376648935af4f077df6ef, type: 3}
   - gameId: solar_game
     title: Solar Game
     thumbnail: {fileID: -1058266910, guid: 3b2f3c93673674a5ca9da9c9d831e82f, type: 3}

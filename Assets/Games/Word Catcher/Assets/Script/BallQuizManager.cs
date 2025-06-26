@@ -13,6 +13,7 @@ public class BallQuizManager : MonoBehaviour
 {
     [Header("Start Game")]
     public GameObject startPanel;
+    public GameObject livesPanel;
 
     [Header("Answer Ball")]
     public GameObject answerBallPrefab;
@@ -71,6 +72,7 @@ public class BallQuizManager : MonoBehaviour
         if (startPanel != null)
         {
             startPanel.SetActive(true);
+            livesPanel.SetActive(false);
         }
         currentLives = maxLives;
         UpdateHeartsDisplay();
@@ -80,6 +82,7 @@ public class BallQuizManager : MonoBehaviour
         if (startPanel != null)
         {
             startPanel.SetActive(false); // Hide start UI
+            livesPanel.SetActive(true);
         }
 
         if (loadedQuestions != null && loadedQuestions.questions.Length > 0)
