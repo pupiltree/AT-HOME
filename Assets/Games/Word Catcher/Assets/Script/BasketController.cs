@@ -1,37 +1,32 @@
 using UnityEngine;
+using UnityEngine.TestTools;
 
 public class BasketController : MonoBehaviour
 {
-    [Header("Movement Settings")]
-    public float movementRange = 8f;         // Max range from center (±value)
-    public float smoothing = 5f;             // Lerp speed
-    public bool allowMovement = false;       // Enable/disable movement
 
-    private float targetX;
-
-    /// <summary>
-    /// Called from MediaPipeNoseBridge with normalized face X (0 to 1)
-    /// </summary>
-    /// <param name="normalizedFaceX">Normalized face X (0=left, 1=right)</param>
-    public void UpdateBasketPosition(float normalizedFaceX)
+    public bool allowMovement = false;
+    public float smoothing = 2;
+    public void UpdateBasketPosition(float normalizedX)
     {
-        if (!allowMovement) return;
+        if (!allowMovement)
+        {
+            return;
+        }
 
-        // Convert normalized X to world space
-        float worldX = Mathf.Lerp(-movementRange, movementRange, normalizedFaceX);
-        targetX = worldX;
+        normalizedX = Mathf.Clamp01(normalizedX);
+
+        float screenWidth = Screen.width;
+
+        float screenPosX = normalizedX * screenWidth;
+
+        float screenPosY = Camera.main.WorldToScreenPoint(transform.position).y;
+        float screenPosZ = Camera.main.WorldToScreenPoint(transform.position).z;
+
+        Vector3 screenPosition = new Vector3(screenPosX, screenPosY, screenPosZ);
+
+        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
+
+        transform.position = Vector3.Lerp(transform.position, new Vector3(worldPosition.x, transform.position.y, transform.position.z), Time.deltaTime * smoothing);
     }
 
-    void Update()
-    {
-        if (!allowMovement) return;
-
-        Vector3 currentPos = transform.position;
-
-        // Smoothly interpolate toward the target X position
-        currentPos.x = Mathf.Lerp(currentPos.x, targetX, Time.deltaTime * smoothing);
-        currentPos.x = Mathf.Clamp(currentPos.x, -movementRange, movementRange);
-
-        transform.position = currentPos;
-    }
 }
